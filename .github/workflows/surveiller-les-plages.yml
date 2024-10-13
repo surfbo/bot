@@ -4,9 +4,10 @@ name: 'Surveiller les plages'
 
 on:
   workflow_dispatch:
-  # Check twice a day at 5:00 AM and 3:00 PM
+  pull_request:
+    branches: [main]
   schedule:
-    - cron: '0 5,15 * * *'
+    - cron: '0 3 * * *'
 
 env:
   node-version: 21.x
