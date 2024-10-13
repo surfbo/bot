@@ -21,9 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Use bun ${{ env.node-version }}
         run: curl -fsSL https://bun.sh/install | bash
-      - name: source bashrc
-        run: source /home/runner/.bashrc
       - name: Install deps
-        run: bun i
+        run: ~/.bun/bin/bun i
       - name: Run script
-        run: bun index.ts
+        run: ~/.bun/bin/bun index.ts
