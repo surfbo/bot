@@ -10,7 +10,6 @@ on:
     - cron: '0 3 * * *'
 
 env:
-  node-version: 21.x
   MATRIX_ACCESS_TOKEN: ${{ secrets.MATRIX_ACCESS_TOKEN }}
 
 jobs:
@@ -20,11 +19,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.node-version }}
+      - name: Use bun ${{ env.node-version }}
+        run: curl -fsSL https://bun.sh/install | bash
       - name: Install deps
-        run: npm i
+        run: bun install
       - name: Run script
-        run: npm start
+        run: bun index.ts

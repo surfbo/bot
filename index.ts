@@ -12,6 +12,7 @@ const client = matrix.createClient({
 
 const bret = '!OxZqETKZbkIBKswQPP:matrix.org';
 await client.sendMessage(bret, {
+  //@ts-ignore
   msgtype: 'm.notice',
   body: "c'estmoi lebobot2",
 });
@@ -32,6 +33,7 @@ client.on('event', async (event: matrix.MatrixEvent) => {
       console.log('input:', input);
       if (roomId) {
         await client.sendMessage(roomId, {
+          //@ts-ignore
           msgtype: 'm.notice',
           body: evaljs(input),
         });
