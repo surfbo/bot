@@ -1,0 +1,29 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests
+
+name: 'Surveiller les plages'
+
+on:
+  workflow_dispatch:
+  # Check twice a day at 5:00 AM and 3:00 PM
+  schedule:
+    - cron: '0 5,15 * * *'
+
+env:
+  node-version: 21.x
+  MATRIX_ACCESS_TOKEN: ${{ secrets.MATRIX_ACCESS_TOKEN }}
+
+jobs:
+  run-bobot:
+    name: Do your magic surf bobot
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ env.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node-version }}
+      - name: Install deps
+        run: npm i
+      - name: Run script
+        run: npm start
