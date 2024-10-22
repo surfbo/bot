@@ -1,31 +1,15 @@
 {
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "loadenv": "^2.2.0",
-    "matrix-js-sdk": "^34.7.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
-  },
   "name": "surf-bobot",
+  "module": "index.ts",
   "type": "module",
-  "version": "1.0.0",
-  "main": "index.ts",
-  "scripts": {
-    "start": "ts-node index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/laem/Surf-bobot.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/laem/Surf-bobot/issues"
-  },
-  "homepage": "https://github.com/laem/Surf-bobot#readme",
-  "description": "",
   "devDependencies": {
-    "@types/node": "^22.7.5"
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "htmlparser2": "^9.1.0",
+    "node-html-parser": "^6.1.13"
   }
 }
