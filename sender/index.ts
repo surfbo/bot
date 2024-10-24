@@ -15,7 +15,8 @@ export const send = async (body: string) => {
   await client.sendMessage(bret, {
     //@ts-ignore
     msgtype: 'm.text',
-    format: 'org.matrix.custom.html',
+    // html doesn't work on element mobile
+    // format: 'org.matrix.custom.html',
     formatted_body: body,
     body,
   });

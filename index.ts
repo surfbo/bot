@@ -1,6 +1,7 @@
 import { parser } from './parser';
 import { fetcher } from './fetcher';
 import { send } from './sender';
+import intervalEmoji from './intervalEmoji';
 
 const playas = await fetcher();
 
@@ -13,34 +14,34 @@ playas.forEach(async ({ html, playa, url }) => {
 
   if (surf) {
     const body = `
-    <div>
-<h2>🚨 swell alert - ${playa}</h2>
-<table>
-<thead>
-<tr>
-  <th scope="col">jour</th>
-  <th scope="col">matin</th>
-  <th scope="col">après-midi</th>
-  <th scope="col">soir</th>
-</tr>
-</thead>
-<tbody>
+🚨 swell alert - ${playa}
 ${daysWithSurf
-  .map(
-    (day) =>
-      `
-      <tr>
-        <th scope="row">${getWeekDay(new Date(day))}</th>
-        ${events[day].map((e) => `<td>${e.rating}⭐️</td>`)}
-      </tr>`
-  )
-  .join('\r\n')}
-    </tbody>
-  
-  </table>
+  .map((day) => {
+    const weekday = getWeekDay(new Date(day));
+    return `${['vendredi', 'lundi'].includes(weekday) ? '---------------' : ''}
+${printEqualLengthDay(weekday)} ${events[day]
+      .map(
+        (e) =>
+          `${intervalEmoji[e.interval] || e.interval} ${
+            e.rating == 0
+              ? '·'
+              : [...new Array(+e.rating)].map(() => '⭐️').join('')
+          }`
+      )
+      .join(' ')}`;
+  })
+  .join('\n')}
 
-<a href="${url}">👉 en savoir plus</a></div>`;
+👉${url}`;
 
+    console.log(body);
     await send(body);
   }
 });
+
+function printEqualLengthDay(day) {
+  const fillNeed = 8 - day.length;
+  console.log(day, fillNeed);
+  const fill = [...new Array(fillNeed)].map(() => ' ').join('');
+  return day + fill;
+}
