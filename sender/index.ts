@@ -14,7 +14,9 @@ const client = matrix.createClient({
 export const send = async (body: string) => {
   await client.sendMessage(bret, {
     //@ts-ignore
-    msgtype: 'm.notice',
+    msgtype: 'm.text',
+    format: 'org.matrix.custom.html',
+    formatted_body: body,
     body,
   });
 };

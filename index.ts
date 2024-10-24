@@ -8,23 +8,38 @@ const getWeekDay = (d: Date) =>
   new Intl.DateTimeFormat('fr-FR', { weekday: 'long' }).format(d);
 
 playas.forEach(async ({ html, playa, url }) => {
-  const events = parser(html);
+  const { surf, events } = parser(html);
   const daysWithSurf = Object.keys(events);
 
-  if (daysWithSurf.length > 0) {
+  if (surf) {
     const body = `
-🚨 swell alert - ${playa}
+    <div>
+<h2>🚨 swell alert - ${playa}</h2>
+<table>
+<thead>
+<tr>
+  <th scope="col">jour</th>
+  <th scope="col">matin</th>
+  <th scope="col">après-midi</th>
+  <th scope="col">soir</th>
+</tr>
+</thead>
+<tbody>
 ${daysWithSurf
   .map(
     (day) =>
-      `${getWeekDay(new Date(day))} | ${events[day].map(
-        (e) => `${e.interval}: ${e.rating}⭐️`
-      )}`
+      `
+      <tr>
+        <th scope="row">${getWeekDay(new Date(day))}</th>
+        ${events[day].map((e) => `<td>${e.rating}⭐️</td>`)}
+      </tr>`
   )
   .join('\r\n')}
+    </tbody>
+  
+  </table>
 
-👉 ${url}
-      `;
+<a href="${url}">👉 en savoir plus</a></div>`;
 
     await send(body);
   }

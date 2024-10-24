@@ -6,11 +6,16 @@ type SurfEvents = {
   rating: string;
 };
 
+type IPlayaSurfEvents = {
+  surf: boolean;
+  events: { [d: string]: SurfEvents[] };
+};
+
 /**
  * compute a ratings per day
  * @param html
  */
-export const parser = (html: string): { [d: string]: SurfEvents[] } => {
+export const parser = (html: string): IPlayaSurfEvents => {
   const events = [] as SurfEvents[];
   let current = new Date();
 
@@ -33,13 +38,16 @@ export const parser = (html: string): { [d: string]: SurfEvents[] } => {
     events[i].rating = text;
     i++;
   });
-  return events.reduce((eventsPerDate, event) => {
-    if (event.rating !== '0') {
+
+  return {
+    surf: !!events.find((e) => e.rating !== '0'),
+    events: events.reduce((eventsPerDate, event) => {
       //@ts-ignore
       eventsPerDate[event.day] = [...(eventsPerDate[event.day] || []), event];
-    }
-    return eventsPerDate;
-  }, {});
+
+      return eventsPerDate;
+    }, {}),
+  };
 };
 
 const extract = (
