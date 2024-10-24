@@ -9,7 +9,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "htmlparser2": "^9.1.0",
-    "node-html-parser": "^6.1.13"
+    "@types/jsdom": "^21.1.7",
+    "jsdom": "^25.0.1"
   }
 }

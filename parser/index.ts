@@ -1,4 +1,4 @@
-import { parse } from 'node-html-parser';
+import { JSDOM } from 'jsdom';
 
 type SurfEvents = {
   day: string;
@@ -10,11 +10,11 @@ type SurfEvents = {
  * compute a ratings per day
  * @param html
  */
-export const parser = (html: string): SurfEvents[] => {
+export const parser = (html: string): { [d: string]: SurfEvents[] } => {
   const events = [] as SurfEvents[];
   let current = new Date();
 
-  const root = parse(html);
+  const root = new JSDOM(html);
 
   extract(root, 'span.forecast-table__value', (text: string) => {
     events.push({
@@ -33,7 +33,13 @@ export const parser = (html: string): SurfEvents[] => {
     events[i].rating = text;
     i++;
   });
-  return events;
+  return events.reduce((eventsPerDate, event) => {
+    if (event.rating !== '0') {
+      //@ts-ignore
+      eventsPerDate[event.day] = [...(eventsPerDate[event.day] || []), event];
+    }
+    return eventsPerDate;
+  }, {});
 };
 
 const extract = (
@@ -41,11 +47,11 @@ const extract = (
   selector: string,
   handler: (text: string) => void
 ) => {
-  const elements = root.querySelectorAll(selector);
+  const elements = root.window.document.querySelectorAll(selector);
   if (elements && elements?.length > 0) {
     for (let i = 0; i < elements.length; i++) {
       if (elements[i]) {
-        handler(elements[i].innerHTML);
+        handler(elements[i].textContent);
       }
     }
   }

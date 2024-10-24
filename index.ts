@@ -6,16 +6,20 @@ const playas = await fetcher();
 
 playas.forEach(async ({ html, playa, url }) => {
   const events = parser(html);
-  if (events.find((e) => e.rating !== '0')) {
-    const body = `
-🚨 swell alert - ${playa}
-${events
-  .filter((e) => e.rating !== '0')
-  .map((e) => `${e.day} ${e.interval} : ${e.rating}`)
-  .join('\r\n')}
+  const daysWithSurf = Object.keys(events);
 
-👉 ${url}
-    `;
+  if (daysWithSurf.length > 0) {
+    const body = `
+  🚨 swell alert - ${playa}
+  ${daysWithSurf
+    .map(
+      (day) =>
+        `${day} | ${events[day].map((e) => `${e.interval}: ${e.rating}⭐️`)}`
+    )
+    .join('\r\n')}
+  
+  👉 ${url}
+      `;
 
     await send(body);
   }
