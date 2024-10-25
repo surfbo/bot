@@ -8,7 +8,7 @@ type SurfEvents = {
 
 type IPlayaSurfEvents = {
   surf: boolean;
-  events: { [d: string]: SurfEvents[] };
+  formattedEvents: string[];
 };
 
 /**
@@ -41,12 +41,36 @@ export const parser = (html: string): IPlayaSurfEvents => {
 
   return {
     surf: !!events.find((e) => e.rating !== '0'),
-    events: events.reduce((eventsPerDate, event) => {
-      //@ts-ignore
-      eventsPerDate[event.day] = [...(eventsPerDate[event.day] || []), event];
+    formattedEvents: Object.entries(
+      events.reduce((eventsPerDate, event) => {
+        //@ts-ignore
+        eventsPerDate[event.day] = {
+          //@ts-ignore
+          ...(eventsPerDate[event.day] || {}),
+          [event.interval]: event,
+        };
 
-      return eventsPerDate;
-    }, {}),
+        return eventsPerDate;
+      }, {})
+    ).map(([day, events]) => {
+      const weekday = `${getWeekDay(new Date(day)).slice(0, 2)} ${getMonthDay(
+        new Date(day)
+      )}`;
+
+      const f = [
+        //@ts-ignore
+        events['matin']?.rating ?? '0',
+        //@ts-ignore
+        events['après-midi']?.rating ?? '0',
+        //@ts-ignore
+        events['soir']?.rating ?? '0',
+      ].join('・');
+
+      if (f !== '0・0・0') {
+        return `${weekday} : ${f}`;
+      }
+      return '(...)';
+    }),
   };
 };
 
@@ -64,3 +88,9 @@ const extract = (
     }
   }
 };
+
+const getWeekDay = (d: Date) =>
+  new Intl.DateTimeFormat('fr-FR', { weekday: 'long' }).format(d);
+
+const getMonthDay = (d: Date) =>
+  new Intl.DateTimeFormat('fr-FR', { day: '2-digit' }).format(d);
