@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/jsdom": "^21.1.7",
+    "dotenv": "^16.4.5",
     "jsdom": "^25.0.1",
     "matrix-js-sdk": "^34.9.0"
   }
