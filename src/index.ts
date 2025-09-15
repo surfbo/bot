@@ -1,12 +1,33 @@
 import { fetcher } from './fetcher';
 import { parser } from './parser';
 import { send } from './sender';
+import { formatSurfAlert, formatSurfPage } from './formatter';
 
 export interface Env {
   MATRIX_ACCESS_TOKEN: string;
 }
 
 export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    try {
+      const playas = await fetcher();
+
+      const surfData = playas.map(({ html, playa, url }) => {
+        const { surf, formattedEvents } = parser(html);
+        return { playa, url, surf, formattedEvents };
+      });
+
+      const html = formatSurfPage(surfData);
+
+      return new Response(html, {
+        headers: { 'Content-Type': 'text/html' },
+        status: 200
+      });
+    } catch (error) {
+      return new Response(`Error: ${error}`, { status: 500 });
+    }
+  },
+
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
     console.log('Surf monitoring cron job started');
 
@@ -20,28 +41,8 @@ export default {
           continue;
         }
 
-        const body = `
-<div>
-<h2>🚨 swell alert - ${playa}</h2>
-<br/>
-<div>${formattedEvents
-          .filter((a, index) => {
-            if (
-              a === '(...)' &&
-              index > 0 &&
-              formattedEvents[index - 1] === '(...)'
-            ) {
-              return false;
-            }
-            return true;
-          })
-          .join('</div><div>')}</div>
-<br/>
-<a href="${url}">👉 en savoir plus</a>
-<div>
-`;
+        const body = formatSurfAlert(playa, formattedEvents, url);
 
-        console.log('Sending surf alert:', body);
         await send(body, env.MATRIX_ACCESS_TOKEN);
       }
     } catch (error) {
