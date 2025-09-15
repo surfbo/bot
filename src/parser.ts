@@ -1,8 +1,6 @@
-import { JSDOM } from 'jsdom';
-
 type SurfEvents = {
   day: string;
-  interval: string; // 'matin' | 'après-midi' | 'soir';
+  interval: string;
   rating: string;
 };
 
@@ -11,32 +9,31 @@ type IPlayaSurfEvents = {
   formattedEvents: string[];
 };
 
-/**
- * compute a ratings per day
- * @param html
- */
 export const parser = (html: string): IPlayaSurfEvents => {
   const events = [] as SurfEvents[];
   let current = new Date();
 
-  const root = new JSDOM(html);
+  // Extract data using HTMLRewriter approach
+  const extractedData = extractDataFromHTML(html);
 
-  extract(root, 'span.forecast-table__value', (text: string) => {
+  // Process intervals
+  extractedData.intervals.forEach((interval) => {
     events.push({
       day: current.toISOString().split('T')[0],
-      interval: text.replace('<br>', ''),
+      interval: interval,
       rating: '',
     });
 
-    if (text === 'soir') {
+    if (interval === 'soir') {
       current.setDate(current.getDate() + 1);
     }
   });
 
-  let i = 0;
-  extract(root, 'div.star-rating__rating', (text: string) => {
-    events[i].rating = text;
-    i++;
+  // Add ratings
+  extractedData.ratings.forEach((rating, index) => {
+    if (events[index]) {
+      events[index].rating = rating;
+    }
   });
 
   return {
@@ -74,20 +71,27 @@ export const parser = (html: string): IPlayaSurfEvents => {
   };
 };
 
-const extract = (
-  root: any,
-  selector: string,
-  handler: (text: string) => void
-) => {
-  const elements = root.window.document.querySelectorAll(selector);
-  if (elements && elements?.length > 0) {
-    for (let i = 0; i < elements.length; i++) {
-      if (elements[i]) {
-        handler(elements[i].textContent);
-      }
-    }
+function extractDataFromHTML(html: string): { intervals: string[], ratings: string[] } {
+  const intervals: string[] = [];
+  const ratings: string[] = [];
+
+  // Use regex to extract data since HTMLRewriter is more complex for this simple parsing
+  // Extract intervals from span.forecast-table__value
+  const intervalMatches = html.matchAll(/<span[^>]*class="[^"]*forecast-table__value[^"]*"[^>]*>([^<]+)<\/span>/gi);
+  for (const match of intervalMatches) {
+    const text = match[1].trim().replace('<br>', '');
+    intervals.push(text);
   }
-};
+
+  // Extract ratings from div.star-rating__rating
+  const ratingMatches = html.matchAll(/<div[^>]*class="[^"]*star-rating__rating[^"]*"[^>]*>([^<]*)<\/div>/gi);
+  for (const match of ratingMatches) {
+    const text = match[1].trim();
+    ratings.push(text);
+  }
+
+  return { intervals, ratings };
+}
 
 const getWeekDay = (d: Date) =>
   new Intl.DateTimeFormat('fr-FR', { weekday: 'long' }).format(d);

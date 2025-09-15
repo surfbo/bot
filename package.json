@@ -1,17 +1,15 @@
 {
-  "name": "surf-bobot",
-  "module": "index.ts",
-  "type": "module",
+  "name": "surf-bobot-workers",
+  "version": "1.0.0",
+  "description": "Surf monitoring bot for Cloudflare Workers",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:production": "wrangler deploy --env production"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
+    "@cloudflare/workers-types": "^4.20240909.0",
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@types/jsdom": "^21.1.7",
-    "dotenv": "^16.4.5",
-    "jsdom": "^25.0.1",
-    "matrix-js-sdk": "^34.9.0"
   }
 }
