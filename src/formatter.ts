@@ -87,7 +87,7 @@ const PAGE_STYLES = `
 
 export function formatSurfPage(surfData: SurfData[]): string {
   const rows = surfData.map(({ playa, url, surf, formattedEvents }) => {
-    const eventsList = formattedEvents.slice(0, 5).map(event =>
+    const eventsList = formattedEvents.map(event =>
       `<div class="event-line">${escapeHtml(event)}</div>`
     ).join('');
 
