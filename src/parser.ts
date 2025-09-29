@@ -71,16 +71,18 @@ export const parser = (html: string): IPlayaSurfEvents => {
   };
 };
 
-function extractDataFromHTML(html: string): { intervals: string[], ratings: string[] } {
+export function extractDataFromHTML(html: string): { intervals: string[], ratings: string[] } {
   const intervals: string[] = [];
   const ratings: string[] = [];
 
   // Use regex to extract data since HTMLRewriter is more complex for this simple parsing
   // Extract intervals from span.forecast-table__value
-  const intervalMatches = html.matchAll(/<span[^>]*class="[^"]*forecast-table__value[^"]*"[^>]*>([^<]+)<\/span>/gi);
+  const intervalMatches = html.matchAll(/<span[^>]*class="[^"]*forecast-table__value[^"]*"[^>]*>([\s\S]*?)<\/span>/gi);
   for (const match of intervalMatches) {
-    const text = match[1].trim().replace('<br>', '');
-    intervals.push(text);
+    const text = match[1].trim().replace(/<br\s*\/?>/gi, '').replace(/\s+/g, ' ').replace(/après-\s*midi/gi, 'après-midi').trim();
+    if (text) { // Only add non-empty text
+      intervals.push(text);
+    }
   }
 
   // Extract ratings from div.star-rating__rating
@@ -93,8 +95,8 @@ function extractDataFromHTML(html: string): { intervals: string[], ratings: stri
   return { intervals, ratings };
 }
 
-const getWeekDay = (d: Date) =>
+export const getWeekDay = (d: Date) =>
   new Intl.DateTimeFormat('fr-FR', { weekday: 'long' }).format(d);
 
-const getMonthDay = (d: Date) =>
+export const getMonthDay = (d: Date) =>
   new Intl.DateTimeFormat('fr-FR', { day: '2-digit' }).format(d);
