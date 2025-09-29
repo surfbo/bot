@@ -1,9 +1,7 @@
 const playaaaaas = ['Le-Sillon'];
 
 type IPlaya = { playa: string; html: string; url: string };
-/**
- * fetch
- */
+
 export const fetcher = async (): Promise<IPlaya[]> => {
   return await Promise.all(
     playaaaaas.map(async (playa) => {
